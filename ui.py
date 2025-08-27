@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-API_URL = "http://127.0.0.1:5000/predict"
+API_URL = "https://sentiment-analysis-project-iveb.onrender.com/predict"
 
 st.title("Sentiment Analysis of Text Reviews")
 
