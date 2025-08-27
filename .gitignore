@@ -12,3 +12,5 @@ sap-venv/
 # IDE / Editor specific
 .idea/
 .vscode/
+
+data/
