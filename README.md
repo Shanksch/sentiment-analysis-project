@@ -10,7 +10,7 @@ A full-stack, end-to-end machine learning application that analyzes the sentimen
 
 **Check out the live, interactive web application here:**
 
-**[Your Deployed Streamlit UI URL]**  <!--  This is crucial! You will build and deploy the UI later, but you can put a placeholder here for now. -->
+**https://sentiment-analysis-project-ui.onrender.com/**  <!--  This is crucial! You will build and deploy the UI later, but you can put a placeholder here for now. -->
 
 **And here is the live API endpoint for the backend:**
 
@@ -96,34 +96,46 @@ The application is designed with a decoupled client-server architecture:
 
 To run this project locally, please follow these steps:
 
-**Prerequisites:**
-- Python 3.9+
-- Git
-- Docker Desktop
+#### Section 2: Usage
 
-**1. Clone the repository:**
+This section explains how to actually launch the application after the setup is complete. Because your application has a separate backend and frontend, it's critical to explain that they must be run simultaneously in different terminals. Providing both a direct Python and a Docker option for the backend is a great way to showcase the different ways your app can be run.
+
+Here is the markdown content for the "Usage" section:
+
+```markdown
+### 🚀 Usage
+
+The application consists of two main components: the backend API (Flask) and the frontend UI (Streamlit). They must be run in separate terminal windows.
+
+**1. Run the Backend Flask API**
+
+Make sure your virtual environment is activated. You can run the API in one of two ways:
+
+*   **Option A: Run with the Flask Development Server**
+    This is the simplest way to run the backend for local testing.
+
+    ```bash
+    python app.py
+    ```
+    The API will now be running and listening for requests at `http://127.0.0.1:5000`.
+
+*   **Option B: Run with the Docker Container**
+    This method runs the production-ready, containerized version of the API. Make sure Docker Desktop is running on your machine.
+
+    ```bash
+    # First, build the Docker image (only needs to be done once)
+    docker build -t sentiment-api .
+
+    # Now, run the container
+    docker run -p 5000:5000 sentiment-api
+    ```
+    The containerized API is now accessible at `http://127.0.0.1:5000`.
+
+**2. Run the Frontend Streamlit UI**
+
+With the backend API running (using either Option A or B), open a **new terminal window**. Activate the same virtual environment and run the following command:
+
 ```bash
-git clone https://github.com/[Your-GitHub-Username]/sentiment-analysis-app.git
-cd sentiment-analysis-app
-
-# For Unix/macOS
-python3 -m venv venv
-source venv/bin/activate
-
-# For Windows
-python -m venv venv
-.\\venv\\Scripts\\activate
-
-pip install -r requirements.txt
-
-The application consists of two main components that need to be run simultaneously in separate terminals:
-
-step 1:    1st option: python app.py
-           2nd option: # Make sure Docker Desktop is running
-                       docker build -t sentiment-api .
-                       docker run -p 5000:5000 sentiment-api
-
-step 2:
 streamlit run ui.py
 
 
@@ -141,4 +153,4 @@ Future Enhancements:
 Name – https://www.linkedin.com/in/shashank-chauhan-353072251/ 
 email – [shashankchn.work@gmail.com]
 
-Project Link: https://github.com/[Your-GitHub-Username]/sentiment-analysis-app
+Project https://github.com/Shanksch/sentiment-analysis-project
