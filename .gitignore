@@ -1,3 +1,15 @@
-sap-venv/
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+.env
+.venv
+env/
+sap-venv/
+ENV/
+
+# IDE / Editor specific
+.idea/
+.vscode/
