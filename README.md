@@ -150,7 +150,7 @@ Future Enhancements:
 
 
 📬 Contact
-Name – https://www.linkedin.com/in/shashank-chauhan-353072251/ 
+Name – https://www.linkedin.com/in/shashank-chauhan-work/ 
 email – [shashankchn.work@gmail.com]
 
 Project https://github.com/Shanksch/sentiment-analysis-project
