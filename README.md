@@ -8,13 +8,11 @@ A full-stack, end-to-end machine learning application that analyzes the sentimen
 
 ### 🚀 Live Demo
 
-**Check out the live, interactive web application here:**
+**Check out the live, unified web application and API here:**
 
-**https://sentiment-analysis-project-ui.onrender.com/**  <!--  This is crucial! You will build and deploy the UI later, but you can put a placeholder here for now. -->
+**https://sentiment-analysis-project-iveb.onrender.com/**
 
-**And here is the live API endpoint for the backend:**
-
-**https://sentiment-analysis-project-iveb.onrender.com/** <!-- e.g., https://sentiment-api-yourname.onrender.com -->
+*(This single deployment hosts both the interactive frontend dashboard at the root `/` and the prediction API endpoint at `/predict`)*
 
 ---
 
@@ -53,18 +51,14 @@ This project provides a comprehensive, hands-on journey into Natural Language Pr
 
 ### 🏗️ Architecture
 
-The application is designed with a decoupled client-server architecture:
+The application uses a unified architecture served entirely by a single Flask application:
 
-1.  **Backend (Flask API):** A production-ready web service that handles the machine learning logic.
-    - It exposes a `/predict` endpoint.
+1.  **Frontend Dashboard:** A modern, responsive, and interactive single-page application built using HTML5, CSS3, and JavaScript, served directly from the Flask backend. It communicates asynchronously with the prediction API.
+2.  **Backend Prediction API:** Handles the core machine learning logic.
+    - It exposes a `POST /predict` endpoint for sentiment classification.
     - It loads the pre-trained TF-IDF vectorizer and Logistic Regression model.
-    - It preprocesses incoming text and returns a sentiment prediction in JSON format.
-    - It is containerized by Docker and run with a Gunicorn WSGI server.
-2.  **Frontend (Streamlit UI):** A separate, interactive web application that acts as a client to the backend.
-    - It provides a text area for user input.
-    - On submission, it makes an HTTP POST request to the Flask API.
-    - It receives the JSON response and displays the result in a user-friendly, color-coded format.
-
+    - It preprocesses incoming text, runs prediction, and returns the result as JSON.
+3.  **Containerized Deployment:** The entire service is containerized via a single Dockerfile and runs with a production-grade Gunicorn WSGI server.
 
 ---
 
@@ -99,45 +93,29 @@ To run this project locally, please follow these steps:
 #### Section 2: Usage
 
 This section explains how to actually launch the application after the setup is complete. Because your application has a separate backend and frontend, it's critical to explain that they must be run simultaneously in different terminals. Providing both a direct Python and a Docker option for the backend is a great way to showcase the different ways your app can be run.
-
-Here is the markdown content for the "Usage" section:
-
-```markdown
 ### 🚀 Usage
 
-The application consists of two main components: the backend API (Flask) and the frontend UI (Streamlit). They must be run in separate terminal windows.
-
-**1. Run the Backend Flask API**
-
-Make sure your virtual environment is activated. You can run the API in one of two ways:
+Since the application is unified, you only need to run a single service. Make sure your virtual environment is activated and dependencies are installed.
 
 *   **Option A: Run with the Flask Development Server**
-    This is the simplest way to run the backend for local testing.
+    This is the simplest way to run the application for local testing.
 
     ```bash
     python app.py
     ```
-    The API will now be running and listening for requests at `http://127.0.0.1:5000`.
+    The dashboard and API will now be running and accessible at `http://127.0.0.1:5000`.
 
 *   **Option B: Run with the Docker Container**
-    This method runs the production-ready, containerized version of the API. Make sure Docker Desktop is running on your machine.
+    This method runs the production-ready, containerized version. Make sure Docker Desktop is running.
 
     ```bash
-    # First, build the Docker image (only needs to be done once)
-    docker build -t sentiment-api .
+    # First, build the Docker image
+    docker build -t sentiment-app .
 
     # Now, run the container
-    docker run -p 5000:5000 sentiment-api
+    docker run -p 5000:5000 sentiment-app
     ```
-    The containerized API is now accessible at `http://127.0.0.1:5000`.
-
-**2. Run the Frontend Streamlit UI**
-
-With the backend API running (using either Option A or B), open a **new terminal window**. Activate the same virtual environment and run the following command:
-
-```bash
-streamlit run ui.py
-
+    The application will be accessible at `http://127.0.0.1:5000`.
 
 
 Future Enhancements:

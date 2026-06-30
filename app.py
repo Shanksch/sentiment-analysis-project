@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import joblib
 import re
 from data_preprocessing import preprocess_text
@@ -15,15 +15,15 @@ def load_model():
         try:
             model = joblib.load('lr_model.pkl')
             vectorizer = joblib.load('tfidf_vectorizer.pkl')
-            print("✅ Model and vectorizer loaded successfully.")
+            print("Model and vectorizer loaded successfully.")
         except FileNotFoundError:
-            print("❌ Error: Model or vectorizer file not found.")
+            print("Error: Model or vectorizer file not found.")
         except Exception as e:
-            print(f"❌ Error loading model/vectorizer: {e}")
+            print(f"Error loading model/vectorizer: {e}")
 
 @app.route("/")
 def home():
-    return jsonify({"message": "API is running!"})
+    return render_template("index.html")
 
 @app.route("/predict", methods=["POST"])
 def predict():

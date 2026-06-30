@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentiment Analysis Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: rgba(25, 28, 41, 0.65);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #f5f6f8;
+            --text-secondary: #94a3b8;
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --primary-glow: rgba(139, 92, 246, 0.3);
+            --success: #10b981;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --success-glow: rgba(16, 185, 129, 0.25);
+            --error: #f43f5e;
+            --error-bg: rgba(244, 63, 94, 0.1);
+            --error-glow: rgba(244, 63, 94, 0.25);
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(244, 63, 94, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+        }
+
+        /* Container Layout */
+        .container {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Header Styling */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-family: var(--font-display);
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 30%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.03em;
+            margin-bottom: 12px;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1.1fr 0.9fr;
+                align-items: start;
+            }
+        }
+
+        /* Cards and Panels */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 30px;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+        }
+
+        .input-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Presets & Samples */
+        .presets-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 600;
+            margin-bottom: -10px;
+        }
+
+        .preset-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+
+        .preset-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            padding: 8px 14px;
+            font-family: var(--font-main);
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+        }
+
+        .preset-btn:hover {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: rgba(139, 92, 246, 0.3);
+            color: #a78bfa;
+            transform: translateY(-1px);
+        }
+
+        /* Text Area Styling */
+        .textarea-container {
+            position: relative;
+        }
+
+        textarea {
+            width: 100%;
+            height: 180px;
+            background: rgba(10, 11, 16, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: none;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+
+        textarea::placeholder {
+            color: rgba(148, 163, 184, 0.45);
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+            background: rgba(10, 11, 16, 0.8);
+        }
+
+        /* Custom Scrollbar for Textarea */
+        textarea::-webkit-scrollbar {
+            width: 6px;
+        }
+        textarea::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        textarea::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 24px;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 12px var(--primary-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 6px 20px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Loader Animation */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Results Panel */
+        .result-panel {
+            min-height: 388px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        /* Initial State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            color: var(--text-secondary);
+            max-width: 260px;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            opacity: 0.4;
+        }
+
+        /* Loaded Sentiment Result Cards */
+        .sentiment-card {
+            width: 100%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .sentiment-badge {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sentiment-icon {
+            font-size: 5rem;
+            filter: drop-shadow(0 10px 15px cubic-bezier(0.1, 0.8, 0.3, 1));
+            animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .sentiment-desc {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            max-width: 280px;
+        }
+
+        /* Card Styles depending on Sentiment Type */
+        .sentiment-card.positive {
+            color: var(--success);
+        }
+        .sentiment-card.positive .sentiment-badge {
+            background: linear-gradient(135deg, #a7f3d0 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px var(--success-glow));
+        }
+
+        .sentiment-card.negative {
+            color: var(--error);
+        }
+        .sentiment-card.negative .sentiment-badge {
+            background: linear-gradient(135deg, #fecdd3 0%, #f43f5e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px var(--error-glow));
+        }
+
+        /* Alert Notifications */
+        .alert-error {
+            background: var(--error-bg);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            color: #fda4af;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            text-align: left;
+            animation: fadeIn 0.3s ease-out forwards;
+            width: 100%;
+        }
+
+        /* Info Grid / Tech Stack footer */
+        .info-grid {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .info-card h3 {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+
+        .info-card p {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Footer Copyright */
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            font-size: 0.85rem;
+            color: rgba(148, 163, 184, 0.4);
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            margin-top: 40px;
+        }
+
+        footer a {
+            color: rgba(167, 139, 250, 0.6);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        footer a:hover {
+            color: #a78bfa;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.1);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Dashboard Header -->
+        <header>
+            <h1>Sentiment Analyzer</h1>
+            <p>Deploying cutting-edge text analytics. Input your movie, product, or customer review below to decode the underlying sentiment instantly.</p>
+        </header>
+
+        <!-- Main Workspace -->
+        <div class="dashboard-grid">
+            
+            <!-- Input Panel -->
+            <div class="card input-panel">
+                <div class="panel-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-square-text"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M13 8H7"/><path d="M17 12H7"/></svg>
+                    Text Input
+                </div>
+
+                <!-- Example Presets -->
+                <div class="presets-label">Quick Presets:</div>
+                <div class="preset-buttons">
+                    <button class="preset-btn" data-type="positive">⭐ Classic Positive</button>
+                    <button class="preset-btn" data-type="negative">⭐ Critic Negative</button>
+                    <button class="preset-btn" data-type="neutral">⭐ Mixed Feelings</button>
+                </div>
+
+                <!-- Input Textarea -->
+                <div class="textarea-container">
+                    <textarea id="review-text" placeholder="Write your review here... For example: 'This movie exceeded all my expectations, the cinematography was gorgeous and the performances were incredibly deep.'" max-length="5000"></textarea>
+                </div>
+
+                <!-- Submit Button -->
+                <button id="submit-btn" class="btn-submit">
+                    <span class="spinner" id="btn-spinner"></span>
+                    <span id="btn-text">Analyze Sentiment</span>
+                    <svg id="btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send-horizontal"><path d="m3 3 3 9-3 9 19-9Z"/><path d="M6 12h16"/></svg>
+                </button>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="card result-panel" id="result-card">
+                
+                <!-- Empty State (Shown initially) -->
+                <div class="empty-state" id="empty-state">
+                    <div class="empty-icon">🔮</div>
+                    <h3>Waiting for Analysis</h3>
+                    <p>Enter text and click analyze to run the sentiment classification model.</p>
+                </div>
+
+                <!-- Positive Sentiment Result Card -->
+                <div class="sentiment-card positive" id="positive-result">
+                    <div class="sentiment-icon">👍</div>
+                    <div class="sentiment-badge">Positive</div>
+                    <div class="sentiment-desc">
+                        Our model predicts this text conveys a predominantly positive sentiment, showing strong approval or pleasant feedback.
+                    </div>
+                </div>
+
+                <!-- Negative Sentiment Result Card -->
+                <div class="sentiment-card negative" id="negative-result">
+                    <div class="sentiment-icon">👎</div>
+                    <div class="sentiment-badge">Negative</div>
+                    <div class="sentiment-desc">
+                        Our model predicts this text conveys a predominantly negative sentiment, reflecting disapproval, concern, or critical feedback.
+                    </div>
+                </div>
+
+                <!-- Error Alert Box -->
+                <div class="alert-error" id="error-alert">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-circle"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12" y1="16" y2="16"/></svg>
+                    <span id="error-text">Failed to connect to the backend. Please try again.</span>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Tech Stack info -->
+        <div class="info-grid">
+            <div class="info-card">
+                <h3>Backend Framework</h3>
+                <p>Flask & Gunicorn</p>
+            </div>
+            <div class="info-card">
+                <h3>ML Architecture</h3>
+                <p>TF-IDF + Logistic Reg.</p>
+            </div>
+            <div class="info-card">
+                <h3>Model Source</h3>
+                <p>IMDb Dataset (85%+ Acc)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Sentiment Analysis Dashboard. Developed with &hearts; for high portability. | Code hosted on <a href="https://github.com/Shanksch/sentiment-analysis-project" target="_blank">GitHub</a></p>
+    </footer>
+
+    <!-- Frontend logic -->
+    <script>
+        const reviewTextarea = document.getElementById('review-text');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnSpinner = document.getElementById('btn-spinner');
+        const btnText = document.getElementById('btn-text');
+        const btnIcon = document.getElementById('btn-icon');
+        
+        // Result views
+        const emptyState = document.getElementById('empty-state');
+        const positiveResult = document.getElementById('positive-result');
+        const negativeResult = document.getElementById('negative-result');
+        const errorAlert = document.getElementById('error-alert');
+        const resultCard = document.getElementById('result-card');
+
+        // Presets Map
+        const presets = {
+            positive: "This movie was absolutely brilliant! The acting was superb, the screenplay was razor-sharp, and the plot was engaging from start to finish. I highly recommend it!",
+            negative: "What a complete waste of time. The script is full of cliches, the sound design is atrocious, and the characters are incredibly boring. Save your money.",
+            neutral: "The visual effects were stunning, and the main lead did a decent job. However, the runtime was way too long and the third act fell flat."
+        };
+
+        // Preset button handlers
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.getAttribute('data-type');
+                if (presets[type]) {
+                    reviewTextarea.value = presets[type];
+                    // Trigger dynamic focus effect
+                    reviewTextarea.focus();
+                }
+            });
+        });
+
+        // Clear display states
+        function clearDisplay() {
+            emptyState.style.display = 'none';
+            positiveResult.style.display = 'none';
+            negativeResult.style.display = 'none';
+            errorAlert.style.display = 'none';
+            
+            // Clear glowing backgrounds
+            resultCard.style.boxShadow = '0 10px 30px -10px rgba(0, 0, 0, 0.5)';
+            resultCard.style.borderColor = 'var(--border-color)';
+        }
+
+        // Set UI loading state
+        function setLoading(isLoading) {
+            if (isLoading) {
+                btnSpinner.style.display = 'block';
+                btnText.textContent = 'Processing...';
+                btnIcon.style.display = 'none';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.8';
+                submitBtn.style.cursor = 'not-allowed';
+            } else {
+                btnSpinner.style.display = 'none';
+                btnText.textContent = 'Analyze Sentiment';
+                btnIcon.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+            }
+        }
+
+        // Submit to API
+        submitBtn.addEventListener('click', async () => {
+            const text = reviewTextarea.value.trim();
+            if (!text) {
+                clearDisplay();
+                errorAlert.style.display = 'flex';
+                document.getElementById('error-text').textContent = 'Please enter a review text first.';
+                return;
+            }
+
+            clearDisplay();
+            setLoading(true);
+
+            try {
+                // Post request to local /predict since they run together on the same host
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ review: text })
+                });
+
+                const data = await response.json();
+                setLoading(false);
+
+                if (response.ok) {
+                    const sentiment = data.sentiment;
+                    if (sentiment === 'Positive') {
+                        positiveResult.style.display = 'flex';
+                        resultCard.style.boxShadow = '0 0 35px var(--success-glow)';
+                        resultCard.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                    } else if (sentiment === 'Negative') {
+                        negativeResult.style.display = 'flex';
+                        resultCard.style.boxShadow = '0 0 35px var(--error-glow)';
+                        resultCard.style.borderColor = 'rgba(244, 63, 94, 0.4)';
+                    } else {
+                        errorAlert.style.display = 'flex';
+                        document.getElementById('error-text').textContent = 'Model returned an unexpected sentiment result.';
+                    }
+                } else {
+                    errorAlert.style.display = 'flex';
+                    document.getElementById('error-text').textContent = data.error || `Server error (Status: ${response.status})`;
+                }
+
+            } catch (error) {
+                setLoading(false);
+                errorAlert.style.display = 'flex';
+                document.getElementById('error-text').textContent = 'Connection Error: Failed to connect to prediction API.';
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
